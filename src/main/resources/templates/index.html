@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Travel Planner | Explore More</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="brand" th:href="@{/}">✈ Travel<span>Planner</span></a>
+    <div class="nav-links">
+        <a th:href="@{/}">Home</a>
+        <a th:href="@{/trips}">My Trips</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <h1>Plan Your Dream Trips</h1>
+    <p>Discover new places, create unforgettable memories, and manage all your travel plans in one place.</p>
+    <a class="btn btn-green" th:href="@{/trips}">View My Trips →</a>
+</section>
+
+<section class="features">
+    <div class="feature">
+        <div class="feature-icon">✈</div>
+        <h3>Plan Trips</h3>
+        <p>Add your dream destinations and travel dates.</p>
+    </div>
+
+    <div class="feature">
+        <div class="feature-icon">▦</div>
+        <h3>Track Budget</h3>
+        <p>Keep your travel expenses in check.</p>
+    </div>
+
+    <div class="feature">
+        <div class="feature-icon">⌖</div>
+        <h3>Discover Places</h3>
+        <p>Explore amazing destinations around the world.</p>
+    </div>
+
+    <div class="feature">
+        <div class="feature-icon">♡</div>
+        <h3>Create Memories</h3>
+        <p>Turn your plans into unforgettable experiences.</p>
+    </div>
+</section>
+
+<footer class="footer">
+    Your next adventure starts here.
+</footer>
+
+</body>
+</html>
