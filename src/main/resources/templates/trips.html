@@ -1,74 +1,647 @@
 
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>My Trips | Travel Planner</title>
+
+    <title>My Trips | Wanderly</title>
     <link rel="stylesheet" th:href="@{/style.css}">
+
+    <style>
+        .main-content {
+            min-width: 0;
+        }
+
+        .topbar {
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .topbar h1 {
+            letter-spacing: -1.5px;
+        }
+
+        .dashboard-greeting {
+            margin: 0 0 8px;
+            color: #81869a;
+            font-size: 13px;
+        }
+
+        .dashboard-date {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 12px;
+            padding: 7px 11px;
+            color: #6658e8;
+            background: #f0efff;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .stats-grid {
+            gap: 17px;
+        }
+
+        .stat-card {
+            min-width: 0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(32, 36, 58, 0.07);
+        }
+
+        .stat-card h2 {
+            overflow-wrap: anywhere;
+        }
+
+        .budget-value {
+            font-size: clamp(19px, 2vw, 27px);
+        }
+
+        .dashboard-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .trips-section {
+            min-width: 0;
+        }
+
+        .section-heading {
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .trip-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            margin-left: 8px;
+            padding: 0 8px;
+            color: #6658e8;
+            background: #f0efff;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 800;
+            vertical-align: middle;
+        }
+
+        .filter-bar {
+            display: grid;
+            grid-template-columns: minmax(160px, 1fr) minmax(130px, 190px) auto auto;
+            gap: 10px;
+            margin: 22px 0 25px;
+        }
+
+        .filter-bar input,
+        .filter-bar select {
+            box-sizing: border-box;
+            width: 100%;
+            min-width: 0;
+            min-height: 43px;
+            padding: 10px 12px;
+            color: #34384e;
+            background: #fff;
+            border: 1px solid #e5e5ef;
+            border-radius: 9px;
+            outline: none;
+            font-size: 12px;
+        }
+
+        .filter-bar input:focus,
+        .filter-bar select:focus {
+            border-color: #8b80f0;
+            box-shadow: 0 0 0 3px rgba(102, 88, 232, 0.09);
+        }
+
+        .filter-bar .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 43px;
+            padding: 10px 15px;
+            border-radius: 9px;
+            white-space: nowrap;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .trip-grid {
+            align-items: stretch;
+        }
+
+        .trip-card {
+            min-width: 0;
+            overflow: hidden;
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+        }
+
+        .trip-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 32px rgba(32, 36, 58, 0.09);
+        }
+
+        .trip-cover {
+            position: relative;
+            min-height: 135px;
+            overflow: hidden;
+            background:
+                linear-gradient(135deg, rgba(102, 88, 232, 0.96), rgba(87, 160, 197, 0.8)),
+                #6658e8;
+        }
+
+        .trip-cover::before,
+        .trip-cover::after {
+            position: absolute;
+            content: "";
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .trip-cover::before {
+            top: -70px;
+            right: -25px;
+            width: 180px;
+            height: 180px;
+        }
+
+        .trip-cover::after {
+            top: -40px;
+            right: 15px;
+            width: 110px;
+            height: 110px;
+        }
+
+        .cover-symbol {
+            position: relative;
+            z-index: 1;
+            font-size: 35px;
+            opacity: 0.95;
+        }
+
+        .status-pill {
+            z-index: 2;
+            font-weight: 800;
+        }
+
+        .trip-card-body {
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 135px);
+            box-sizing: border-box;
+        }
+
+        .trip-destination {
+            color: #6658e8;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            overflow-wrap: anywhere;
+        }
+
+        .trip-card-body h3 {
+            overflow-wrap: anywhere;
+        }
+
+        .trip-description {
+            display: -webkit-box;
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .trip-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 7px;
+            font-size: 11px;
+        }
+
+        .trip-card-footer {
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 17px;
+        }
+
+        .trip-card-footer > div:first-child {
+            min-width: 0;
+        }
+
+        .trip-card-footer small {
+            display: block;
+            margin-bottom: 5px;
+            color: #898da0;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .trip-card-footer strong {
+            overflow-wrap: anywhere;
+            font-size: 14px;
+        }
+
+        .card-actions {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .card-actions form {
+            display: inline-flex;
+            margin: 0;
+        }
+
+        .icon-button {
+            display: inline-grid;
+            place-items: center;
+            width: 35px;
+            height: 35px;
+            padding: 0;
+            border: 1px solid #e7e6f0;
+            border-radius: 9px;
+            background: #fff;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .icon-button:hover {
+            transform: translateY(-2px);
+            background: #f0efff;
+        }
+
+        .delete-button:hover {
+            background: #fff0f1;
+        }
+
+        .empty-state {
+            padding: 48px 20px;
+            background: #fff;
+            border: 1px dashed #dcd9ef;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            display: grid;
+            place-items: center;
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 17px;
+            color: #6658e8;
+            background: #f0efff;
+            border-radius: 17px;
+            font-size: 26px;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            margin-bottom: 20px;
+            color: #81869a;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .page-footer {
+            padding-top: 25px;
+            text-align: center;
+        }
+
+        @media (max-width: 1000px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .filter-bar {
+                grid-template-columns: minmax(0, 1fr) minmax(120px, 170px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .dashboard-actions {
+                width: 100%;
+            }
+
+            .dashboard-actions .button {
+                justify-content: center;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 11px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-card h2 {
+                font-size: 22px;
+            }
+
+            .filter-bar {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .filter-bar .button {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .trip-card-footer {
+                align-items: flex-end;
+            }
+        }
+    </style>
 </head>
+
 <body>
+<div class="app-shell">
 
-<nav class="navbar">
-    <a class="brand" th:href="@{/}">✈ Travel<span>Planner</span></a>
-    <div class="nav-links">
-        <a th:href="@{/}">Home</a>
-        <a th:href="@{/trips}">My Trips</a>
-    </div>
-</nav>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <a class="brand" th:href="@{/trips}">
+            <span class="brand-icon">W</span>
+            <span>Wanderly</span>
+        </a>
 
-<header class="page-banner">
-    <h1>My Trips</h1>
-    <p>Your saved adventures, all in one place.</p>
-</header>
+        <p class="nav-label">WORKSPACE</p>
 
-<main class="page-container">
-    <div class="section-heading">
-        <h2>Your Travel Plans</h2>
-        <a class="btn btn-green" th:href="@{/trips/new}">+ Add New Trip</a>
-    </div>
+        <a class="nav-link active" th:href="@{/trips}">
+            ▦ &nbsp; My trips
+        </a>
 
-    <div class="empty-state" th:if="${#lists.isEmpty(trips)}">
-        <h2>No trips yet!</h2>
-        <p>Start planning your next adventure today.</p>
-        <a class="btn btn-blue" th:href="@{/trips/new}">Create Your First Trip</a>
-    </div>
+        <a class="nav-link" th:href="@{/trips/new}">
+            ＋ &nbsp; Plan a trip
+        </a>
 
-    <div class="trip-list" th:unless="${#lists.isEmpty(trips)}">
-        <article class="trip-card" th:each="trip : ${trips}">
+        <a class="nav-link" th:href="@{/}">
+            ⌂ &nbsp; Home
+        </a>
 
-            <img class="trip-photo"
-                 th:src="${trip.destination != null and #strings.containsIgnoreCase(trip.destination, 'goa')} ? 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=500&q=80' : (${trip.destination != null and #strings.containsIgnoreCase(trip.destination, 'kerala')} ? 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=500&q=80' : 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=500&q=80')"
-                 alt="Destination scenery">
+        <div class="sidebar-bottom">
+            <div class="profile-avatar">W</div>
+            <div>
+                <strong>Travel planner</strong>
+                <small>Your next adventure</small>
+            </div>
+        </div>
+    </aside>
 
-            <div class="trip-info">
-                <h3 th:text="${trip.title}">Summer Vacation</h3>
-                <p>📍 <span th:text="${trip.destination}">Manali</span></p>
-                <p>📅 <span th:text="${trip.startDate}"></span> to
-                    <span th:text="${trip.endDate}"></span></p>
-                <p>💰 ₹ <span th:text="${trip.budget}">15000</span></p>
+    <!-- MAIN DASHBOARD -->
+    <main class="main-content">
+
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">YOUR PERSONAL TRAVEL SPACE</p>
+
+                <h1>
+                    My trips <span class="heading-dot">.</span>
+                </h1>
+
+                <p class="muted">
+                    Every great journey starts with a plan.
+                </p>
+
+                <div class="dashboard-date">
+                    <span aria-hidden="true">✦</span>
+                    Your next adventure starts here
+                </div>
             </div>
 
-            <div class="trip-actions">
-                <a class="btn btn-blue"
-                   th:href="@{/trips/edit/{id}(id=${trip.id})}">✎ Edit</a>
+            <div class="dashboard-actions">
+                <a class="button button-primary" th:href="@{/trips/new}">
+                    + New trip
+                </a>
+            </div>
+        </header>
 
-                <form th:action="@{/trips/delete/{id}(id=${trip.id})}"
-                      method="post"
-                      onsubmit="return confirm('Are you sure you want to delete this trip?');">
-                    <button class="btn btn-danger" type="submit">Delete</button>
-                </form>
+        <!-- STATISTICS -->
+        <section class="stats-grid">
+
+            <article class="stat-card">
+                <span class="stat-icon purple">✈</span>
+                <p>Total trips</p>
+                <h2 th:text="${totalTrips}">0</h2>
+                <small>All your adventures</small>
+            </article>
+
+            <article class="stat-card">
+                <span class="stat-icon blue">◷</span>
+                <p>Upcoming</p>
+                <h2 th:text="${upcomingCount}">0</h2>
+                <small>Journeys ahead</small>
+            </article>
+
+            <article class="stat-card">
+                <span class="stat-icon green">✓</span>
+                <p>Completed</p>
+                <h2 th:text="${completedCount}">0</h2>
+                <small>Memories made</small>
+            </article>
+
+            <article class="stat-card">
+                <span class="stat-icon orange">₹</span>
+                <p>Planned budget</p>
+                <h2 class="budget-value">
+                    ₹<span th:text="${#numbers.formatDecimal(totalBudget, 1, 2)}">0.00</span>
+                </h2>
+                <small>Across all trips</small>
+            </article>
+
+        </section>
+
+        <!-- TRIPS LIST -->
+        <section class="trips-section">
+
+            <div class="section-heading">
+                <div>
+                    <h2>
+                        Your adventures
+                        <span class="trip-count" th:text="${trips.size()}">0</span>
+                    </h2>
+
+                    <p class="muted">
+                        Find and manage your travel plans.
+                    </p>
+                </div>
             </div>
 
-        </article>
-    </div>
+            <!-- SEARCH AND FILTER -->
+            <form class="filter-bar"
+                  th:action="@{/trips}"
+                  method="get">
 
-    <a class="back-link" th:href="@{/}">← Back to Home</a>
-</main>
+                <input
+                    type="search"
+                    name="search"
+                    th:value="${search}"
+                    placeholder="Search destination or trip..."
+                    aria-label="Search trips">
 
-<footer class="footer">
-    Travel Planner · Make every journey memorable
-</footer>
+                <select name="status" aria-label="Filter trips by status">
+                    <option value="all"
+                            th:selected="${status == 'all'}">
+                        All trips
+                    </option>
 
+                    <option value="upcoming"
+                            th:selected="${status == 'upcoming'}">
+                        Upcoming
+                    </option>
+
+                    <option value="ongoing"
+                            th:selected="${status == 'ongoing'}">
+                        Ongoing
+                    </option>
+
+                    <option value="completed"
+                            th:selected="${status == 'completed'}">
+                        Completed
+                    </option>
+                </select>
+
+                <button class="button button-dark" type="submit">
+                    Filter
+                </button>
+
+                <a class="button button-light" th:href="@{/trips}">
+                    Reset
+                </a>
+            </form>
+
+            <!-- TRIP CARDS -->
+            <div class="trip-grid" th:if="${!trips.isEmpty()}">
+
+                <article class="trip-card" th:each="trip : ${trips}">
+
+                    <div class="trip-cover">
+                        <span class="cover-symbol" aria-hidden="true">✈</span>
+
+                        <span class="status-pill"
+                              th:if="${trip.startDate != null and trip.endDate != null}"
+                              th:classappend="${trip.endDate.isBefore(T(java.time.LocalDate).now()) ? ' completed' : (trip.startDate.isAfter(T(java.time.LocalDate).now()) ? ' upcoming' : ' ongoing')}"
+                              th:text="${trip.endDate.isBefore(T(java.time.LocalDate).now()) ? 'Completed' : (trip.startDate.isAfter(T(java.time.LocalDate).now()) ? 'Upcoming' : 'Ongoing')}">
+                            Upcoming
+                        </span>
+                    </div>
+
+                    <div class="trip-card-body">
+
+                        <p class="trip-destination"
+                           th:text="${trip.destination}">
+                            Destination
+                        </p>
+
+                        <h3 th:text="${trip.title}">
+                            Trip title
+                        </h3>
+
+                        <p class="trip-description"
+                           th:text="${trip.description != null and !trip.description.isBlank() ? trip.description : 'A new adventure is waiting for you.'}">
+                            Trip description
+                        </p>
+
+                        <div class="trip-meta">
+                            <span>
+                                ▣
+                                <span th:text="${trip.startDate}">Start</span>
+                            </span>
+
+                            <span aria-hidden="true">→</span>
+
+                            <span th:text="${trip.endDate}">End</span>
+                        </div>
+
+                        <div class="trip-card-footer">
+
+                            <div>
+                                <small>ESTIMATED BUDGET</small>
+
+                                <strong
+                                    th:text="${trip.budget != null ? '₹' + #numbers.formatDecimal(trip.budget, 1, 2) : 'Not set'}">
+                                    ₹0.00
+                                </strong>
+                            </div>
+
+                            <div class="card-actions">
+
+                                <a class="icon-button"
+                                   th:href="@{/trips/edit/{id}(id=${trip.id})}"
+                                   title="Edit trip"
+                                   aria-label="Edit trip">
+                                    ✎
+                                </a>
+
+                                <form
+                                    th:action="@{/trips/delete/{id}(id=${trip.id})}"
+                                    method="post"
+                                    onsubmit="return confirm('Are you sure you want to delete this trip? This action cannot be undone.');">
+
+                                    <button
+                                        class="icon-button delete-button"
+                                        type="submit"
+                                        title="Delete trip"
+                                        aria-label="Delete trip">
+                                        ×
+                                    </button>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+
+            <!-- EMPTY STATE -->
+            <div class="empty-state" th:if="${trips.isEmpty()}">
+
+                <div class="empty-icon" aria-hidden="true">✈</div>
+
+                <h3>No trips found</h3>
+
+                <p>
+                    There are no trips matching your current search or filter.
+                    Start planning your next adventure.
+                </p>
+
+                <a class="button button-primary" th:href="@{/trips/new}">
+                    + Plan a trip
+                </a>
+            </div>
+
+        </section>
+
+        <footer class="page-footer">
+            Made for curious minds and faraway places.
+        </footer>
+
+    </main>
+</div>
 </body>
 </html>

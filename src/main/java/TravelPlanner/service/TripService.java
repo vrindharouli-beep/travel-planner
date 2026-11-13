@@ -16,16 +16,18 @@ public class TripService {
         this.tripRepository = tripRepository;
     }
 
-    public Trip saveTrip(Trip trip) {
-        return tripRepository.save(trip);
-    }
-
     public List<Trip> getAllTrips() {
         return tripRepository.findAll();
     }
 
     public Trip getTripById(Long id) {
-        return tripRepository.findById(id).orElse(null);
+        return tripRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Trip not found: " + id));
+    }
+
+    public Trip saveTrip(Trip trip) {
+        return tripRepository.save(trip);
     }
 
     public void deleteTrip(Long id) {

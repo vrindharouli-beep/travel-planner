@@ -2,8 +2,8 @@
 package TravelPlanner.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "trips")
@@ -18,6 +18,9 @@ public class Trip {
     private LocalDate startDate;
     private LocalDate endDate;
     private BigDecimal budget;
+
+    @Column(length = 1000)
+    private String description;
 
     public Trip() {
     }
@@ -65,5 +68,12 @@ public class Trip {
     public void setBudget(BigDecimal budget) {
         this.budget = budget;
     }
-}
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+}

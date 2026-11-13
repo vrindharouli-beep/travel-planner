@@ -1,74 +1,823 @@
 
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Edit Trip | Travel Planner</title>
+
+    <title th:text="${pageTitle} + ' | Travel Planner'">Plan a Trip | Travel Planner</title>
+
     <link rel="stylesheet" th:href="@{/style.css}">
+
+    <style>
+        .form-page {
+            min-height: 100vh;
+            padding: 35px 18px 55px;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(102, 88, 232, 0.10), transparent 30%),
+                radial-gradient(circle at 90% 90%, rgba(86, 174, 154, 0.10), transparent 30%),
+                #f7f7fb;
+        }
+
+        .form-wrapper {
+            width: 100%;
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        .form-back-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 24px;
+        }
+
+        .form-back-row .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .form-step-label {
+            color: #85899b;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .form-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.6fr) minmax(230px, 0.8fr);
+            align-items: start;
+            gap: 24px;
+        }
+
+        .form-card {
+            min-width: 0;
+            padding: clamp(23px, 4vw, 38px);
+            background: #fff;
+            border: 1px solid #ececf3;
+            border-radius: 19px;
+            box-shadow: 0 12px 40px rgba(32, 36, 58, 0.05);
+        }
+
+        .form-heading-icon {
+            display: grid;
+            place-items: center;
+            width: 52px;
+            height: 52px;
+            margin-bottom: 22px;
+            color: #6658e8;
+            background: #f0efff;
+            border-radius: 15px;
+            font-size: 25px;
+        }
+
+        .form-card .eyebrow {
+            margin-bottom: 8px;
+            color: #6658e8;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+        }
+
+        .form-card h1 {
+            margin-bottom: 9px;
+            color: #20243a;
+            font-size: clamp(25px, 4vw, 34px);
+            letter-spacing: -1px;
+            line-height: 1.25;
+        }
+
+        .form-card .muted {
+            margin-bottom: 27px;
+            color: #81869a;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .form-divider {
+            height: 1px;
+            margin: 24px 0;
+            background: #ececf3;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 9px;
+            color: #34384e;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .required-star {
+            color: #e15c6c;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 46px;
+            padding: 12px 14px;
+            color: #20243a;
+            background: #fcfcfe;
+            border: 1px solid #e5e5ef;
+            border-radius: 10px;
+            outline: none;
+            font: inherit;
+            font-size: 13px;
+            transition: border-color 0.2s ease,
+                        box-shadow 0.2s ease,
+                        background 0.2s ease;
+        }
+
+        .form-group textarea {
+            min-height: 115px;
+            resize: vertical;
+            line-height: 1.7;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            background: #fff;
+            border-color: #8b80f0;
+            box-shadow: 0 0 0 4px rgba(102, 88, 232, 0.09);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #a1a4b3;
+        }
+
+        .form-group input:invalid:not(:placeholder-shown) {
+            border-color: #e5a0a8;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .form-help {
+            display: block;
+            margin-top: 7px;
+            color: #898da0;
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        .budget-input-wrap {
+            position: relative;
+        }
+
+        .budget-input-wrap .currency-symbol {
+            position: absolute;
+            top: 50%;
+            left: 14px;
+            color: #6658e8;
+            font-size: 13px;
+            font-weight: 800;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .budget-input-wrap input {
+            padding-left: 34px;
+        }
+
+        .budget-preview {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 9px;
+            padding: 12px;
+            background: #f6f5ff;
+            border: 1px solid #eeecff;
+            border-radius: 10px;
+        }
+
+        .budget-preview-label {
+            color: #777b91;
+            font-size: 11px;
+        }
+
+        .budget-preview-value {
+            color: #5143d0;
+            font-size: 13px;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .form-actions .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease,
+                        background 0.2s ease;
+        }
+
+        .form-actions .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .form-actions .button-primary {
+            border: 1px solid #6658e8;
+        }
+
+        .form-actions .button-light {
+            border: 1px solid #e5e5ef;
+        }
+
+        .form-actions button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none;
+        }
+
+        /* Right-hand trip preview */
+        .trip-preview-panel {
+            position: sticky;
+            top: 25px;
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid #ececf3;
+            border-radius: 18px;
+            box-shadow: 0 12px 35px rgba(32, 36, 58, 0.04);
+        }
+
+        .preview-cover {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            min-height: 180px;
+            padding: 22px;
+            overflow: hidden;
+            color: white;
+            background:
+                linear-gradient(0deg, rgba(23, 25, 47, 0.85), rgba(23, 25, 47, 0.05)),
+                url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=900&q=80")
+                center / cover no-repeat;
+        }
+
+        .preview-cover-content {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+        }
+
+        .preview-small-label {
+            margin-bottom: 7px;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+        }
+
+        .preview-title {
+            margin: 0 0 5px;
+            color: white;
+            font-size: 21px;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
+        }
+
+        .preview-destination {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .preview-details {
+            padding: 20px;
+        }
+
+        .preview-details h3 {
+            margin-bottom: 15px;
+            color: #20243a;
+            font-size: 13px;
+        }
+
+        .preview-detail-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 11px;
+            margin-bottom: 17px;
+        }
+
+        .preview-detail-icon {
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            color: #6658e8;
+            background: #f0efff;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        .preview-detail-label {
+            margin-bottom: 4px;
+            color: #85899b;
+            font-size: 10px;
+        }
+
+        .preview-detail-value {
+            color: #34384e;
+            font-size: 12px;
+            font-weight: 700;
+            overflow-wrap: anywhere;
+        }
+
+        .preview-note {
+            margin-top: 5px;
+            padding: 12px;
+            color: #777b91;
+            background: #fafaff;
+            border: 1px dashed #dedaf8;
+            border-radius: 10px;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .form-page-footer {
+            margin-top: 23px;
+            color: #9296a7;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        @media (max-width: 760px) {
+            .form-layout {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .trip-preview-panel {
+                position: static;
+            }
+
+            .preview-cover {
+                min-height: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-page {
+                padding: 20px 12px 35px;
+            }
+
+            .form-back-row {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .form-card {
+                padding: 22px 17px;
+            }
+
+            .form-row {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 0;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .form-actions .button {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
 </head>
-<body>
 
-<nav class="navbar">
-    <a class="brand" th:href="@{/}">✈ Travel<span>Planner</span></a>
-    <div class="nav-links">
-        <a th:href="@{/}">Home</a>
-        <a th:href="@{/trips}">My Trips</a>
+<body class="form-page">
+
+<div class="form-wrapper">
+
+    <!-- Back navigation -->
+    <div class="form-back-row">
+        <a class="back-link" th:href="@{/trips}">
+            <span aria-hidden="true">←</span> Back to my trips
+        </a>
+
+        <span class="form-step-label">Your journey begins here</span>
     </div>
-</nav>
 
-<header class="form-banner">
-    <h1>✎ Edit Trip</h1>
-    <p>Update your trip details below.</p>
-</header>
+    <div class="form-layout">
 
-<main>
-    <form class="form-card"
-          th:action="@{/trips/update/{id}(id=${trip.id})}"
-          th:object="${trip}" method="post">
+        <!-- Main trip form -->
+        <section class="form-card">
 
-        <h2>Update Your Travel Plan</h2>
+            <div class="form-heading-icon" aria-hidden="true">✈</div>
 
-        <div class="form-group">
-            <label for="title">Trip Title</label>
-            <input id="title" type="text" th:field="*{title}" required>
-        </div>
+            <p class="eyebrow">MAKE IT HAPPEN</p>
 
-        <div class="form-group">
-            <label for="destination">Destination</label>
-            <input id="destination" type="text"
-                   th:field="*{destination}" required>
-        </div>
+            <h1 th:text="${pageTitle}">Plan a new trip</h1>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="startDate">Start Date</label>
-                <input id="startDate" type="date"
-                       th:field="*{startDate}" required>
+            <p class="muted">
+                Add your destination, choose your dates, and create a plan
+                for your next adventure.
+            </p>
+
+            <div class="form-divider"></div>
+
+            <form id="tripForm"
+                  th:action="@{/trips/save}"
+                  th:object="${trip}"
+                  method="post">
+
+                <input type="hidden" th:field="*{id}">
+
+                <!-- Trip name -->
+                <div class="form-group">
+                    <label for="title">
+                        Trip name <span class="required-star">*</span>
+                    </label>
+
+                    <input
+                        id="title"
+                        type="text"
+                        th:field="*{title}"
+                        placeholder="e.g. Summer in the mountains"
+                        maxlength="100"
+                        autocomplete="off"
+                        required>
+
+                    <small class="form-help">
+                        Give your adventure a name you'll remember.
+                    </small>
+                </div>
+
+                <!-- Destination -->
+                <div class="form-group">
+                    <label for="destination">
+                        Destination <span class="required-star">*</span>
+                    </label>
+
+                    <input
+                        id="destination"
+                        type="text"
+                        th:field="*{destination}"
+                        placeholder="e.g. Manali, Himachal Pradesh"
+                        maxlength="150"
+                        autocomplete="off"
+                        required>
+                </div>
+
+                <!-- Travel dates -->
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="startDate">
+                            Start date <span class="required-star">*</span>
+                        </label>
+
+                        <input
+                            id="startDate"
+                            type="date"
+                            th:field="*{startDate}"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endDate">
+                            End date <span class="required-star">*</span>
+                        </label>
+
+                        <input
+                            id="endDate"
+                            type="date"
+                            th:field="*{endDate}"
+                            required>
+                    </div>
+
+                </div>
+
+                <small class="form-help" id="dateHelp" role="status">
+                    Select your departure and return dates.
+                </small>
+
+                <div class="form-divider"></div>
+
+                <!-- Budget -->
+                <div class="form-group">
+                    <label for="budget">Estimated budget</label>
+
+                    <div class="budget-input-wrap">
+                        <span class="currency-symbol" aria-hidden="true">₹</span>
+
+                        <input
+                            id="budget"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            th:field="*{budget}"
+                            placeholder="15000">
+                    </div>
+
+                    <div class="budget-preview">
+                        <span class="budget-preview-label">
+                            Your planned budget
+                        </span>
+
+                        <span class="budget-preview-value" id="budgetPreview">
+                            Not set
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="form-group">
+                    <label for="description">Trip notes</label>
+
+                    <textarea
+                        id="description"
+                        th:field="*{description}"
+                        rows="4"
+                        maxlength="1000"
+                        placeholder="Places to visit, activities, accommodation ideas, or other notes..."></textarea>
+
+                    <small class="form-help">
+                        <span id="noteCount">0</span>/1000 characters
+                    </small>
+                </div>
+
+                <!-- Form actions -->
+                <div class="form-actions">
+                    <a class="button button-light" th:href="@{/trips}">
+                        Cancel
+                    </a>
+
+                    <button class="button button-primary" type="submit">
+                        Save trip <span aria-hidden="true">→</span>
+                    </button>
+                </div>
+
+            </form>
+        </section>
+
+        <!-- Live trip preview -->
+        <aside class="trip-preview-panel">
+
+            <div class="preview-cover">
+                <div class="preview-cover-content">
+                    <div class="preview-small-label">Your next adventure</div>
+
+                    <h2 class="preview-title" id="previewTitle">
+                        Your trip name
+                    </h2>
+
+                    <p class="preview-destination" id="previewDestination">
+                        Your destination
+                    </p>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="endDate">End Date</label>
-                <input id="endDate" type="date"
-                       th:field="*{endDate}" required>
+            <div class="preview-details">
+
+                <h3>Trip overview</h3>
+
+                <div class="preview-detail-row">
+                    <div class="preview-detail-icon" aria-hidden="true">▦</div>
+
+                    <div>
+                        <div class="preview-detail-label">Departure</div>
+                        <div class="preview-detail-value" id="previewStartDate">
+                            Not selected
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-detail-row">
+                    <div class="preview-detail-icon" aria-hidden="true">↗</div>
+
+                    <div>
+                        <div class="preview-detail-label">Return</div>
+                        <div class="preview-detail-value" id="previewEndDate">
+                            Not selected
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-detail-row">
+                    <div class="preview-detail-icon" aria-hidden="true">◷</div>
+
+                    <div>
+                        <div class="preview-detail-label">Trip duration</div>
+                        <div class="preview-detail-value" id="previewDuration">
+                            Select your dates
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-note">
+                    <strong>Travel tip</strong><br>
+                    Leave some room in your budget for local transport,
+                    meals, and unexpected expenses.
+                </div>
+
             </div>
-        </div>
+        </aside>
 
-        <div class="form-group">
-            <label for="budget">Budget (INR ₹)</label>
-            <input id="budget" type="number" min="0" step="0.01"
-                   th:field="*{budget}" required>
-        </div>
+    </div>
 
-        <div class="form-actions">
-            <button class="btn btn-blue" type="submit">✎ Update Trip</button>
-            <a class="btn btn-light" th:href="@{/trips}">← Cancel</a>
-        </div>
+    <footer class="form-page-footer">
+        Travel Planner · Every great journey starts with a plan.
+    </footer>
 
-    </form>
-</main>
+</div>
 
-<footer class="footer">Every journey deserves a great plan.</footer>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const titleInput = document.getElementById("title");
+        const destinationInput = document.getElementById("destination");
+        const startDateInput = document.getElementById("startDate");
+        const endDateInput = document.getElementById("endDate");
+        const budgetInput = document.getElementById("budget");
+        const descriptionInput = document.getElementById("description");
+        const tripForm = document.getElementById("tripForm");
+
+        const previewTitle = document.getElementById("previewTitle");
+        const previewDestination = document.getElementById("previewDestination");
+        const previewStartDate = document.getElementById("previewStartDate");
+        const previewEndDate = document.getElementById("previewEndDate");
+        const previewDuration = document.getElementById("previewDuration");
+        const budgetPreview = document.getElementById("budgetPreview");
+        const dateHelp = document.getElementById("dateHelp");
+        const noteCount = document.getElementById("noteCount");
+
+        function updateTextPreview(input, element, fallback) {
+            const value = input.value.trim();
+            element.textContent = value || fallback;
+        }
+
+        function formatDate(dateValue) {
+            if (!dateValue) {
+                return "Not selected";
+            }
+
+            const parts = dateValue.split("-");
+
+            if (parts.length !== 3) {
+                return "Not selected";
+            }
+
+            const date = new Date(
+                Number(parts[0]),
+                Number(parts[1]) - 1,
+                Number(parts[2])
+            );
+
+            return date.toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "short",
+                year: "numeric"
+            });
+        }
+
+        function updateDates() {
+            const startValue = startDateInput.value;
+            const endValue = endDateInput.value;
+
+            startDateInput.setCustomValidity("");
+            endDateInput.setCustomValidity("");
+
+            previewStartDate.textContent = formatDate(startValue);
+            previewEndDate.textContent = formatDate(endValue);
+
+            if (startValue) {
+                endDateInput.min = startValue;
+            } else {
+                endDateInput.removeAttribute("min");
+            }
+
+            if (startValue && endValue) {
+                const start = new Date(startValue + "T00:00:00");
+                const end = new Date(endValue + "T00:00:00");
+
+                const difference =
+                    Math.round((end - start) / (1000 * 60 * 60 * 24));
+
+                if (difference < 0) {
+                    previewDuration.textContent = "Check your dates";
+                    dateHelp.textContent =
+                        "The return date cannot be before the departure date.";
+                    endDateInput.setCustomValidity(
+                        "Return date cannot be before departure date."
+                    );
+                } else {
+                    const days = difference + 1;
+
+                    previewDuration.textContent =
+                        days + (days === 1 ? " day" : " days");
+
+                    dateHelp.textContent =
+                        "Your trip will last " + days +
+                        (days === 1 ? " day, including travel dates." :
+                                      " days, including travel dates.");
+                }
+            } else {
+                previewDuration.textContent = "Select your dates";
+                dateHelp.textContent =
+                    "Select your departure and return dates.";
+            }
+        }
+
+        function updateBudget() {
+            const value = budgetInput.value;
+
+            if (value === "") {
+                budgetPreview.textContent = "Not set";
+                return;
+            }
+
+            const amount = Number(value);
+
+            if (!Number.isFinite(amount) || amount < 0) {
+                budgetPreview.textContent = "Enter a valid amount";
+                return;
+            }
+
+            budgetPreview.textContent = amount.toLocaleString("en-IN", {
+                style: "currency",
+                currency: "INR",
+                maximumFractionDigits: 2
+            });
+        }
+
+        function updateNoteCount() {
+            noteCount.textContent = descriptionInput.value.length;
+        }
+
+        titleInput.addEventListener("input", function () {
+            updateTextPreview(titleInput, previewTitle, "Your trip name");
+        });
+
+        destinationInput.addEventListener("input", function () {
+            updateTextPreview(
+                destinationInput,
+                previewDestination,
+                "Your destination"
+            );
+        });
+
+        startDateInput.addEventListener("change", updateDates);
+        endDateInput.addEventListener("change", updateDates);
+        budgetInput.addEventListener("input", updateBudget);
+        descriptionInput.addEventListener("input", updateNoteCount);
+
+        tripForm.addEventListener("submit", function (event) {
+            updateDates();
+
+            if (!tripForm.checkValidity()) {
+                event.preventDefault();
+                tripForm.reportValidity();
+            }
+        });
+
+        // Initialize preview for existing trips when editing.
+        updateTextPreview(titleInput, previewTitle, "Your trip name");
+        updateTextPreview(
+            destinationInput,
+            previewDestination,
+            "Your destination"
+        );
+
+        updateDates();
+        updateBudget();
+        updateNoteCount();
+    });
+</script>
 
 </body>
 </html>

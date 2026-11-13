@@ -1,57 +1,927 @@
 
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Travel Planner | Explore More</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wanderly | Discover Your Next Adventure</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #7057ed;
+            --primary-dark: #5540ce;
+            --dark: #202035;
+            --muted: #77778c;
+            --light: #f8f7fc;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            color: var(--dark);
+            background: var(--light);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        button, a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .navbar {
+            height: 78px;
+            padding: 0 7%;
+            background: rgba(255,255,255,.96);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 3px 24px rgba(35,25,80,.05);
+        }
+
+        .logo {
+            font-family: 'Manrope', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            color: var(--primary);
+        }
+
+        .logo span {
+            color: var(--dark);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .nav-links > a:not(.nav-cta):hover {
+            color: var(--primary);
+        }
+
+        .nav-cta, .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--primary);
+            color: white;
+            border: 0;
+            border-radius: 12px;
+            padding: 14px 21px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .25s ease;
+        }
+
+        .nav-cta:hover, .button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(112,87,237,.24);
+        }
+
+        .hero {
+            min-height: 610px;
+            width: 92%;
+            margin: 25px auto 0;
+            border-radius: 28px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            background:
+                linear-gradient(90deg,
+                    rgba(15,20,40,.83) 0%,
+                    rgba(15,20,40,.54) 45%,
+                    rgba(15,20,40,.08) 100%),
+                url("https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=2200&q=90")
+                center 50% / cover no-repeat;
+        }
+
+        .hero-content {
+            max-width: 760px;
+            padding: 65px;
+            color: white;
+            animation: fadeUp .8s ease both;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: rgba(255,255,255,.16);
+            border: 1px solid rgba(255,255,255,.28);
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 26px;
+            backdrop-filter: blur(8px);
+        }
+
+        .hero h1 {
+            font-family: 'Manrope', sans-serif;
+            font-size: clamp(44px, 6.5vw, 78px);
+            font-weight: 800;
+            letter-spacing: -3.5px;
+            line-height: 1.08;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 span {
+            color: #c9c0ff;
+        }
+
+        .hero p {
+            max-width: 490px;
+            color: #f0effa;
+            font-size: 17px;
+            line-height: 1.85;
+            margin-bottom: 32px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .hero .button {
+            background: white;
+            color: var(--primary);
+            padding: 16px 23px;
+        }
+
+        .hero .button:hover {
+            background: #f0edff;
+        }
+
+        .outline-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid rgba(255,255,255,.75);
+            color: white;
+            border-radius: 12px;
+            padding: 15px 22px;
+            font-weight: 700;
+            transition: .25s;
+        }
+
+        .outline-button:hover {
+            background: white;
+            color: var(--dark);
+        }
+
+        .hero-note {
+            position: absolute;
+            bottom: 28px;
+            right: 28px;
+            padding: 17px 22px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0,0,0,.16);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .hero-note strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .hero-note small {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .section {
+            padding: 90px 7%;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .eyebrow {
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+            font-size: 12px;
+            margin-bottom: 13px;
+        }
+
+        .section-header h2 {
+            font-family: 'Manrope', sans-serif;
+            font-size: clamp(28px, 4vw, 42px);
+            line-height: 1.2;
+            letter-spacing: -1.5px;
+            margin-bottom: 11px;
+        }
+
+        .section-header p {
+            color: var(--muted);
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            width: 300px;
+            padding: 14px 16px;
+            background: white;
+            border: 1px solid #e9e6f5;
+            border-radius: 13px;
+            transition: .2s;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(112,87,237,.09);
+        }
+
+        .search-icon {
+            font-size: 21px;
+            color: var(--primary);
+        }
+
+        .search-box input {
+            width: 100%;
+            min-width: 0;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        .destination-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 25px;
+        }
+
+        .destination-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #eeecf5;
+            transition: transform .3s ease, box-shadow .3s ease;
+            animation: fadeUp .6s ease both;
+        }
+
+        .destination-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 18px 45px rgba(36,25,90,.12);
+        }
+
+        .destination-image {
+            height: 245px;
+            position: relative;
+            overflow: hidden;
+            background: #e9e5fa;
+        }
+
+        .destination-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform .55s ease;
+        }
+
+        .destination-card:hover .destination-image img {
+            transform: scale(1.08);
+        }
+
+        .destination-tag {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,.96);
+            color: var(--dark);
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .destination-info {
+            padding: 22px;
+        }
+
+        .destination-info h3 {
+            font-family: 'Manrope', sans-serif;
+            font-size: 21px;
+            margin-bottom: 9px;
+        }
+
+        .destination-info p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.8;
+            min-height: 50px;
+            margin-bottom: 20px;
+        }
+
+        .destination-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .plan-link {
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .plan-link:hover {
+            text-decoration: underline;
+        }
+
+        .no-results {
+            display: none;
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px 20px;
+            background: white;
+            border-radius: 18px;
+            color: var(--muted);
+        }
+
+        .features-section {
+            background: #f0edff;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 23px;
+            margin-top: 35px;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid #e8e3ff;
+            border-radius: 19px;
+            padding: 30px;
+            transition: .25s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 14px 35px rgba(70,55,150,.09);
+        }
+
+        .feature-icon {
+            width: 54px;
+            height: 54px;
+            display: grid;
+            place-items: center;
+            background: #eeeaff;
+            border-radius: 16px;
+            font-size: 25px;
+            margin-bottom: 22px;
+        }
+
+        .feature-card h3 {
+            font-family: 'Manrope', sans-serif;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            line-height: 1.9;
+            color: var(--muted);
+        }
+
+        .cta-section {
+            margin: 0 7% 80px;
+            padding: 65px 25px;
+            border-radius: 26px;
+            text-align: center;
+            color: white;
+            background:
+                linear-gradient(125deg, rgba(65,45,177,.96), rgba(130,107,246,.94)),
+                url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=80")
+                center / cover;
+        }
+
+        .cta-section h2 {
+            font-family: 'Manrope', sans-serif;
+            font-size: clamp(29px, 4vw, 43px);
+            letter-spacing: -1.2px;
+            margin-bottom: 15px;
+        }
+
+        .cta-section p {
+            max-width: 570px;
+            margin: 0 auto 27px;
+            color: #f0edff;
+            line-height: 1.8;
+        }
+
+        .cta-section .button {
+            background: white;
+            color: var(--primary);
+        }
+
+        footer {
+            background: white;
+            border-top: 1px solid #eceaf4;
+            padding: 29px 7%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        footer .logo {
+            font-size: 23px;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-7px);
+            }
+        }
+
+        @media (max-width: 950px) {
+            .navbar {
+                padding: 0 5%;
+            }
+
+            .hero-content {
+                padding: 45px;
+            }
+
+            .destination-grid, .feature-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .section {
+                padding: 70px 5%;
+            }
+
+            .section-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+                max-width: 420px;
+            }
+
+            .cta-section {
+                margin-left: 5%;
+                margin-right: 5%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                height: 70px;
+                padding: 0 4%;
+            }
+
+            .logo {
+                font-size: 23px;
+            }
+
+            .nav-links {
+                gap: 12px;
+                font-size: 12px;
+            }
+
+            .nav-links .nav-home,
+            .nav-links .nav-features {
+                display: none;
+            }
+
+            .nav-cta {
+                padding: 11px 13px;
+            }
+
+            .hero {
+                width: 94%;
+                min-height: 535px;
+                margin-top: 15px;
+                border-radius: 22px;
+                background-position: center;
+            }
+
+            .hero-content {
+                padding: 26px;
+            }
+
+            .hero h1 {
+                font-size: clamp(42px, 11vw, 58px);
+                letter-spacing: -2px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .hero-note {
+                display: none;
+            }
+
+            .section {
+                padding: 58px 5%;
+            }
+
+            .destination-grid, .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .destination-image {
+                height: 250px;
+            }
+
+            .destination-info p {
+                min-height: 0;
+            }
+
+            .cta-section {
+                margin: 0 5% 50px;
+                padding: 45px 22px;
+            }
+
+            footer {
+                padding: 25px 5%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<nav class="navbar">
-    <a class="brand" th:href="@{/}">✈ Travel<span>Planner</span></a>
-    <div class="nav-links">
-        <a th:href="@{/}">Home</a>
-        <a th:href="@{/trips}">My Trips</a>
-    </div>
-</nav>
+<header class="navbar">
+    <a class="logo" th:href="@{/}">Wanderly<span>.</span></a>
 
-<section class="hero">
-    <h1>Plan Your Dream Trips</h1>
-    <p>Discover new places, create unforgettable memories, and manage all your travel plans in one place.</p>
-    <a class="btn btn-green" th:href="@{/trips}">View My Trips →</a>
-</section>
+    <nav class="nav-links">
+        <a class="nav-home" th:href="@{/}">Home</a>
+        <a href="#destinations">Destinations</a>
+        <a class="nav-features" href="#features">Features</a>
+        <a class="nav-cta" th:href="@{/trips}">My Trips ↗</a>
+    </nav>
+</header>
 
-<section class="features">
-    <div class="feature">
-        <div class="feature-icon">✈</div>
-        <h3>Plan Trips</h3>
-        <p>Add your dream destinations and travel dates.</p>
-    </div>
+<main>
 
-    <div class="feature">
-        <div class="feature-icon">▦</div>
-        <h3>Track Budget</h3>
-        <p>Keep your travel expenses in check.</p>
-    </div>
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">✦ Your next adventure starts here</div>
 
-    <div class="feature">
-        <div class="feature-icon">⌖</div>
-        <h3>Discover Places</h3>
-        <p>Explore amazing destinations around the world.</p>
-    </div>
+            <h1>
+                The world is<br>
+                <span>waiting for you.</span>
+            </h1>
 
-    <div class="feature">
-        <div class="feature-icon">♡</div>
-        <h3>Create Memories</h3>
-        <p>Turn your plans into unforgettable experiences.</p>
-    </div>
-</section>
+            <p>
+                Discover incredible places, organise your travel plans,
+                manage your budget and turn your dream destinations
+                into unforgettable memories.
+            </p>
 
-<footer class="footer">
-    Your next adventure starts here.
+            <div class="hero-buttons">
+                <a class="button" th:href="@{/trips/new}">
+                    + Plan My Trip
+                </a>
+
+                <a class="outline-button" href="#destinations">
+                    Explore Places ↓
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-note">
+            <strong>✈ Your next journey awaits</strong>
+            <small>Dream it. Plan it. Experience it.</small>
+        </div>
+    </section>
+
+    <!-- DESTINATIONS -->
+    <section class="section" id="destinations">
+
+        <div class="section-header">
+            <div>
+                <div class="eyebrow">Explore somewhere new</div>
+                <h2>Find your happy place.</h2>
+                <p>Get inspired by beautiful destinations around the world.</p>
+            </div>
+
+            <label class="search-box">
+                <span class="search-icon">⌕</span>
+                <input
+                    id="destinationSearch"
+                    type="search"
+                    placeholder="Search a destination..."
+                    aria-label="Search destinations">
+            </label>
+        </div>
+
+        <div class="destination-grid" id="destinationGrid">
+
+            <article class="destination-card"
+                     data-search="manali india himalayas mountain snow nature">
+                <div class="destination-image">
+                    <img
+                        src="https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1000&q=85"
+                        alt="Beautiful Himalayan mountains near Manali"
+                        loading="lazy">
+                    <span class="destination-tag">🏔 Mountain escape</span>
+                </div>
+
+                <div class="destination-info">
+                    <h3>Manali, India</h3>
+                    <p>Mountain air, winding roads, pine forests and unforgettable Himalayan views.</p>
+
+                    <div class="destination-footer">
+                        <span>📍 Himachal Pradesh</span>
+                        <a class="plan-link" th:href="@{/trips/new}">Plan trip ↗</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="destination-card"
+                     data-search="bali indonesia island beach tropical ocean">
+                <div class="destination-image">
+                    <img
+                        src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1000&q=85"
+                        alt="Tropical landscape in Bali, Indonesia"
+                        loading="lazy">
+                    <span class="destination-tag">🌴 Island life</span>
+                </div>
+
+                <div class="destination-info">
+                    <h3>Bali, Indonesia</h3>
+                    <p>Tropical landscapes, peaceful temples and beautiful island adventures.</p>
+
+                    <div class="destination-footer">
+                        <span>📍 Southeast Asia</span>
+                        <a class="plan-link" th:href="@{/trips/new}">Plan trip ↗</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="destination-card"
+                     data-search="switzerland swiss alps europe snow mountains lake">
+                <div class="destination-image">
+                    <img
+                        src="https://images.unsplash.com/photo-1531366936337-7c912a4589a7?auto=format&fit=crop&w=1000&q=85"
+                        alt="Scenic alpine landscape"
+                        loading="lazy">
+                    <span class="destination-tag">❄ Alpine adventure</span>
+                </div>
+
+                <div class="destination-info">
+                    <h3>Swiss Alps</h3>
+                    <p>Discover majestic mountains, peaceful lakes and postcard-perfect villages.</p>
+
+                    <div class="destination-footer">
+                        <span>📍 Switzerland</span>
+                        <a class="plan-link" th:href="@{/trips/new}">Plan trip ↗</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="destination-card"
+                     data-search="paris france europe city eiffel tower culture">
+                <div class="destination-image">
+                    <img
+                        src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1000&q=85"
+                        alt="Eiffel Tower and the city of Paris"
+                        loading="lazy">
+                    <span class="destination-tag">🏙 City discovery</span>
+                </div>
+
+                <div class="destination-info">
+                    <h3>Paris, France</h3>
+                    <p>Explore charming streets, world-famous landmarks and cosy cafés.</p>
+
+                    <div class="destination-footer">
+                        <span>📍 Western Europe</span>
+                        <a class="plan-link" th:href="@{/trips/new}">Plan trip ↗</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="destination-card"
+                     data-search="maldives ocean beach island tropical resort">
+                <div class="destination-image">
+                    <img
+                        src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=1000&q=85"
+                        alt="Turquoise water and tropical islands in the Maldives"
+                        loading="lazy">
+                    <span class="destination-tag">🌊 Ocean retreat</span>
+                </div>
+
+                <div class="destination-info">
+                    <h3>Maldives</h3>
+                    <p>Relax beside turquoise water, white-sand beaches and tropical scenery.</p>
+
+                    <div class="destination-footer">
+                        <span>📍 Indian Ocean</span>
+                        <a class="plan-link" th:href="@{/trips/new}">Plan trip ↗</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="destination-card"
+                     data-search="jaipur rajasthan india palace fort heritage culture">
+                <div class="destination-image">
+                    <img
+                        src="https://images.unsplash.com/photo-1599661046827-dacff0c0f09a?auto=format&fit=crop&w=1000&q=85"
+                        alt="Historic palace architecture in Jaipur"
+                        loading="lazy">
+                    <span class="destination-tag">🏰 Culture & heritage</span>
+                </div>
+
+                <div class="destination-info">
+                    <h3>Jaipur, India</h3>
+                    <p>Experience royal palaces, historic forts and colourful local markets.</p>
+
+                    <div class="destination-footer">
+                        <span>📍 Rajasthan</span>
+                        <a class="plan-link" th:href="@{/trips/new}">Plan trip ↗</a>
+                    </div>
+                </div>
+            </article>
+
+            <div class="no-results" id="noResults">
+                <h3>No destinations found</h3>
+                <p style="margin-top: 10px;">Try searching for India, beach, mountains or Europe.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section features-section" id="features">
+
+        <div class="eyebrow">Your travel companion</div>
+
+        <div class="section-header">
+            <div>
+                <h2>Make planning feel effortless.</h2>
+                <p>Everything you need to organise your next adventure.</p>
+            </div>
+        </div>
+
+        <div class="feature-grid">
+
+            <article class="feature-card">
+                <div class="feature-icon">🧭</div>
+                <h3>Organise Your Trips</h3>
+                <p>
+                    Save destinations, set travel dates and keep your
+                    plans organised in one convenient place.
+                </p>
+            </article>
+
+            <article class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Manage Your Budget</h3>
+                <p>
+                    Record your planned budget for every trip and
+                    keep an eye on your travel expenses.
+                </p>
+            </article>
+
+            <article class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3>Track Your Adventures</h3>
+                <p>
+                    Review upcoming journeys, update trip information
+                    and keep track of completed adventures.
+                </p>
+            </article>
+
+        </div>
+    </section>
+
+    <!-- CALL TO ACTION -->
+    <section class="cta-section">
+        <h2>Ready to make memories?</h2>
+        <p>
+            Your next great adventure begins with a simple plan.
+            Choose a destination and start building your journey today.
+        </p>
+
+        <a class="button" th:href="@{/trips/new}">
+            Start Planning Now ↗
+        </a>
+    </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+    <a class="logo" th:href="@{/}">Wanderly<span>.</span></a>
+    <span>Explore more. Worry less. Travel better.</span>
+    <span>© <span id="currentYear"></span> Wanderly</span>
 </footer>
+
+<script>
+    const searchInput = document.getElementById('destinationSearch');
+    const destinationCards = document.querySelectorAll('.destination-card');
+    const noResults = document.getElementById('noResults');
+
+    searchInput.addEventListener('input', function () {
+        const searchText = this.value.trim().toLowerCase();
+        let visibleCards = 0;
+
+        destinationCards.forEach(function (card) {
+            const destination = card.dataset.search.toLowerCase();
+            const matches = destination.includes(searchText);
+
+            card.style.display = matches ? '' : 'none';
+
+            if (matches) {
+                visibleCards++;
+            }
+        });
+
+        noResults.style.display = visibleCards === 0 ? 'block' : 'none';
+    });
+
+    document.getElementById('currentYear').textContent =
+        new Date().getFullYear();
+</script>
 
 </body>
 </html>
